@@ -337,14 +337,10 @@ def Result_Quad():
 	 
 	    xx1.config(text = "x emittance: %s."%answerx)
 	    yy1.config(text = "y emittance: %s."%answery)
-
-	    print("sigma11 : %s."%R1_f[0, 0])
-	    print("sigma12 : %s."%R1_f[1, 0])
+	    '''print("sigma11 : %s."%R1_f[0, 0])
 	    print("sigma22 : %s."%R1_f[2, 0])
-
 	    print("sigma33 : %s."%R2_f[0, 0])
-	    print("sigma31 : %s."%R2_f[1, 0])
-	    print("sigma44 : %s."%R2_f[2, 0])
+	    print("sigma44 : %s."%R2_f[2, 0])'''
 
     except ValueError:
         messagebox.showinfo("Error message", "Invalid input")
@@ -370,79 +366,45 @@ def Plot_Quad():
 	    
 	    beta1 = R11_f[0, 0]/answerx1
 	    alpha1 = -R11_f[1, 0]/answerx1
-	    gamma1 = (1+alpha1**2)/beta1
+	    gamma1 = R11_f[2, 0]/answerx1
 
 	  
 	    beta2 = R22_f[0, 0]/answery1
 	    alpha2 = -R22_f[1, 0]/answery1
-	    gamma2 = (1+alpha2**2)/beta2
+	    gamma2 = R22_f[2, 0]/answery1
+	    
 
 	    f1 = plt.Figure(figsize=(5,3), dpi=80,tight_layout=True)  
 	    f2 = plt.Figure(figsize=(5,3), dpi=80,tight_layout=True)
-	    
-	    x1 = arange(-100,100,0.2)
-	    x2 = arange(-100,100,0.2)
 
-	    c1 = []
-	    c2 = []
-	    for i in range(len(x1)):
-               k1 = [abs(beta1),2*alpha1*x1[i],gamma1*x1[i]**2-answerx1]
-               roots = np.roots(k1)
-               c1.append(roots)
-
-	    pos1 = []
-	    neg1 = []
-	    pos2 = []
-	    neg2 = []
-
-	    for i in range(len(c1)):
-	         pos1.append(c1[i][0])
-	         neg1.append(c1[i][1])
-	    for i in range(len(pos1)):
-                if np.imag(pos1[i]) == 0:
-                   pos1[i] = pos1[i]
-                else:
-                   pos1[i] = None
-	    for i in range(len(neg1)):
-	        if np.imag(neg1[i]) == 0:
-                   neg1[i] = neg1[i]
-	        else:
-                   neg1[i] =None
-
-#---------------second------------------------------------------------
-	    for i in range(len(x2)):
-               k1 = [abs(beta2),2*alpha2*x2[i],gamma2*x2[i]**2-answery1]
-               roots = np.roots(k1)
-               c2.append(roots)
-
-	    for i in range(len(c2)):
-	         pos2.append(c2[i][0])
-	         neg2.append(c2[i][1])
-	    for i in range(len(pos2)):
-                if np.imag(pos2[i]) == 0:
-                   pos2[i] = pos2[i]
-                else:
-                   pos2[i] = None
-
-	    for i in range(len(neg2)):
-	        if np.imag(neg2[i]) == 0:
-                   neg2[i] = neg2[i]
-	        else:
-                   neg2[i] =None
-
+	 
+	    x = arange(-100,100,0.2)
+	    k1 = 4*(alpha1**2)*(x**2)-4*beta1*((gamma1*(x**2))-answerx1)
+	    x1 = ((-2)*alpha1*x+(k1**0.5))/2*beta1
 	    a1 = f1.add_subplot(111)
-	    a1.plot(x1,pos1,'*b')
-	    a1.plot(x1,neg1,'*b')
+	    a1.plot(x,x1,'--b')
+
+	    k2 = 4*(alpha1**2)*(x**2)-4*beta1*((gamma1*(x**2))-answerx1)
+	    x2 = ((-2)*alpha1*x-(k2**0.5))/2*beta1
+	    a1 = f1.add_subplot(111)
+	    a1.plot(x,x2,'--b')
+
 	    a1.set_xlabel("X")
 	    a1.set_ylabel("X'")
-	    a1.set_title("Tranverse beam ellipses",fontsize=20)
-	    
-	    a2 = f2.add_subplot(111)  
-	    a2.plot(x2,pos2,'*b')
-	    a2.plot(x2,neg2,'*b')
+	    a1.set_title("Tranverse beam ellipses",fontsize=20)  
+
+
+	    k3 = 4*(alpha2**2)*(x**2)-4*beta2*((gamma2*(x**2))-answery1)
+	    x3 = ((-2)*alpha2*x+(k3**0.5))/2*beta2
+	    a2 = f2.add_subplot(111)    
+	    a2.plot(x,x3,'--b')
 	    a2.set_xlabel("Y")
-	    a2.set_ylabel("Y'") 
+	    a2.set_ylabel("Y'")
 	    
+	    k4 = 4*(alpha2**2)*(x**2)-4*beta2*((gamma2*(x**2))-answery1)
+	    x4 = ((-2)*alpha2*x-(k4**0.5))/2*beta2
+	    a2 = f2.add_subplot(111)    
+	    a2.plot(x,x4,'--b')
 	   
 	    dataPlot1 = FigureCanvasTkAgg(f1, tab1)
 	    dataPlot1.draw()
@@ -493,8 +455,8 @@ button4 = ttk.Button(tab1, text="Clear", command=Clear_Quad).grid(column=3,row=1
 ttk.Label( tab2,text="Energy in keV").grid(column=0,row=0,pady=(20,0))
 ttk.Label( tab2,text="Atomic mass").grid(column=0,row=1)
 ttk.Label( tab2,text="Charge State").grid(column=0,row=2)
-ttk.Label( tab2,text="L4Qcur_01").grid(column=1,row=3,pady=15)
-ttk.Label( tab2,text="L4Qcur_02").grid(column=3,row=3,pady=15)
+ttk.Label( tab2,text="L4Qcur_0").grid(column=1,row=3,pady=15)
+ttk.Label( tab2,text="L5Qcur_0").grid(column=3,row=3,pady=15)
 ttk.Label( tab2,text="L5Qcur_1").grid(column=0,row=5)
 ttk.Label( tab2,text="L5Qcur_2").grid(column=0,row=6)
 ttk.Label( tab2,text="L5Qcur_3").grid(column=0,row=7)
@@ -661,7 +623,7 @@ def getMatrix (B1,B2,cons,L1,L2):
        
        sigma_0 = np.dot(drift2,sol2)
        sigma_1 = np.dot(drift1,sol1)  
-       return np.dot(sigma_0,sigma_1)
+       return sigma_0*sigma_1
 
 def loadme2(L4Q_Cur0,L5Q_Cur0,L5Q_Cur1,L5Q_Cur2,L5Q_Cur3,L5Q_Cur4,L5Q_Cur5,
 L5Q_Cur6,L5Q_Cur7,L5Q_Cur8,L5Q_Cur9,L5Q_Cur10,entry_x1, entry_x2, entry_x3, entry_x4, entry_x5, entry_x6, entry_x7, entry_x8
@@ -758,7 +720,7 @@ def Calculate_Sol():
     Sx_1 = getMatrix(L4Q_B0,L5Q_B1, Constant_Sol(),LL1,LL2) 
     Sx_2 = getMatrix(L4Q_B0,L5Q_B2, Constant_Sol(),LL1,LL2) 
     Sx_3 = getMatrix(L4Q_B0,L5Q_B3, Constant_Sol(),LL1,LL2) 
-    Sx_4 = getMatrix(L4Q_B0,L5Q_B4, Constant_Sol(),LL1,LL2) 
+    Sx_4 = getMatrix(L4Q_B0,L5Q_B4, Constant_Sol(),L1,LL2) 
     Sx_5 = getMatrix(L4Q_B0,L5Q_B5, Constant_Sol(),LL1,L2) 
     Sx_6 = getMatrix(L5Q_B0,L5Q_B6, Constant_Sol(),LL1,LL2)    
     Sx_7 = getMatrix(L5Q_B0,L5Q_B7, Constant_Sol(),LL1,LL2) 
@@ -911,15 +873,6 @@ def Result_Sol():
 	    answery = math.sqrt(abs(pre_ansy))
 
 
-	    print("sigma_11: %s."%R1_f.item((0, 0)))
-	    print("sigma_12: %s."%R1_f.item((1, 0)))
-	    print("sigma_22: %s."%R1_f.item((4, 0)))
-
-	    print("sigma_33: %s."%R1_f.item((7, 0)))
-	    print("sigma_13: %s."%R1_f.item((8, 0)))
-	    print("sigma_44: %s."%R1_f.item((9, 0)))
-
-
 	    xx2.config(text = "x emittance: %s."%np.round(answerx,2))
 	    yy2.config(text = "y emittance: %s."%np.round(answery,2))
     except ValueError:
@@ -945,85 +898,43 @@ def Plot_Sol():
 	    answerx = math.sqrt(abs(pre_ansx1))
 	    answery = math.sqrt(abs(pre_ansy1))
 	    
-	    beta1 = abs(R11_f.item((0, 0))/answerx)
-	    alpha1 = -R11_f.item((1, 0))/answerx
-	    gamma1 = (1+alpha1**2)/beta1
+	    beta1 = R11_f.item((0, 0))/answerx
+	    alpha1 = R11_f.item((1, 0))/answerx
+	    gamma1 = R11_f.item((4, 0))/answerx
 
-	    beta2 = abs(R11_f.item((7, 0))/answery)
-	    alpha2 = -R11_f.item((8, 0))/answery
-	    gamma2 = (1+alpha2**2)/beta2
-	    print("beta: %s."%beta1)
-	    print("alpha: %s."%alpha1)
-	    print("gamma: %s."%gamma1)
+	    beta2 = R11_f.item((7, 0))/answery
+	    alpha2 = R11_f.item((8, 0))/answery
+	    gamma2 = R11_f.item((9, 0))/answery
 
 	    f11 = plt.Figure(figsize=(5,3), dpi=80,tight_layout=True)
 	    f22 = plt.Figure(figsize=(5,3), dpi=80,tight_layout=True)
 
-	    x1 = arange(-100,100,0.2)
-	    x2 = arange(-100,100,0.2)
-	    #x = arange(-100,100,0.2)
-
-
-	    c1 = []
-	    c2 = []
-	    for i in range(len(x1)):
-               k1 = [abs(beta1),2*alpha1*x1[i],gamma1*x1[i]**2-answerx]
-               roots = np.roots(k1)
-               c1.append(roots)
-
-	    pos1 = []
-	    neg1 = []
-	    pos2 = []
-	    neg2 = []
-
-	    for i in range(len(c1)):
-	         pos1.append(c1[i][0])
-	         neg1.append(c1[i][1])
-	    for i in range(len(pos1)):
-                if np.imag(pos1[i]) == 0:
-                   pos1[i] = pos1[i]
-                else:
-                   pos1[i] = None
-	    for i in range(len(neg1)):
-	        if np.imag(neg1[i]) == 0:
-                   neg1[i] = neg1[i]
-	        else:
-                   neg1[i] =None
-
-#---------------second------------------------------------------------
-	    for i in range(len(x2)):
-               k1 = [abs(beta2),2*alpha2*x2[i],gamma2*x2[i]**2-answery]
-               roots = np.roots(k1)
-               c2.append(roots)
-
-	    for i in range(len(c2)):
-	         pos2.append(c2[i][0])
-	         neg2.append(c2[i][1])
-	    for i in range(len(pos2)):
-                if np.imag(pos2[i]) == 0:
-                   pos2[i] = pos2[i]
-                else:
-                   pos2[i] = None
-
-	    for i in range(len(neg2)):
-	        if np.imag(neg2[i]) == 0:
-                   neg2[i] = neg2[i]
-	        else:
-                   neg2[i] =None
-
-
+	    x = arange(-100,100,0.2)
+	    k1 = 4*(alpha1**2)*(x**2)-4*beta1*((gamma1*(x**2))-answerx)
+	    x1 = ((-2)*alpha1*x+(k1**0.5))/2*beta1
 	    a11 = f11.add_subplot(111)
-	    a11.plot(x1,pos1,'*b')
-	    a11.plot(x1,neg1,'*b')
+	    a11.plot(x,x1,'--b')
+	    
+
+	    k2 = 4*(alpha1**2)*(x**2)-4*beta1*((gamma1*(x**2))-answerx)
+	    x2 = ((-2)*alpha1*x-(k2**0.5))/2*beta1
+	    a11 = f11.add_subplot(111)
 	    a11.set_xlabel("X")
 	    a11.set_ylabel("X'")
+	    a11.plot(x,x2,'--b')
 	    a11.set_title("Tranverse beam ellipses",fontsize=20)
 	    
-	    a22 = f22.add_subplot(111)  
-	    a22.plot(x2,pos2,'*b')
-	    a22.plot(x2,neg2,'*b')
+	    k3 = 4*(alpha2**2)*(x**2)-4*beta2*((gamma2*(x**2))-answery)
+	    x3 = ((-2)*alpha2*x+(k3**0.5))/2*beta2
+	    a22 = f22.add_subplot(111)   
 	    a22.set_xlabel("Y")
 	    a22.set_ylabel("Y'") 
+	    a22.plot(x,x3,'--b')
+
+	    k4 = 4*(alpha2**2)*(x**2)-4*beta2*((gamma2*(x**2))-answery)
+	    x4 = ((-2)*alpha2*x-(k4**0.5))/2*beta2
+	    a22 = f22.add_subplot(111)    
+	    a22.plot(x,x4,'--b')
 	  
 	    dataPlot11 = FigureCanvasTkAgg(f11, tab2)
 	    dataPlot11.draw()
@@ -1032,7 +943,6 @@ def Plot_Sol():
 	    dataPlot22 = FigureCanvasTkAgg(f22, tab2)
 	    dataPlot22.draw()
 	    dataPlot22.get_tk_widget().grid(column=8,columnspan=9,row=10,rowspan=20,padx=50)
-
 
     except ValueError:
         messagebox.showinfo("Error message", "Invalid input")
@@ -1460,69 +1370,31 @@ def Plot_Quad1():
 	    f_1 = plt.Figure(figsize=(5,3), dpi=80,tight_layout=True) 
 	    f_2 = plt.Figure(figsize=(5,3), dpi=80,tight_layout=True)
 	 
-	    c1 = []
-	    c2 = []
-
-	    x1 = arange(-100,100,0.2)
-	    x2 = arange(-100,100,0.2)
-
-	    for i in range(len(x1)):
-               k1 = [abs(beta1),2*alpha1*x1[i],gamma1*x1[i]**2-answerx1]
-               roots = np.roots(k1)
-               c1.append(roots)
-
-	    pos1 = []
-	    neg1 = []
-	    pos2 = []
-	    neg2 = []
-
-	    for i in range(len(c1)):
-	         pos1.append(c1[i][0])
-	         neg1.append(c1[i][1])
-	    for i in range(len(pos1)):
-                if np.imag(pos1[i]) == 0:
-                   pos1[i] = pos1[i]
-                else:
-                   pos1[i] = None
-	    for i in range(len(neg1)):
-	        if np.imag(neg1[i]) == 0:
-                   neg1[i] = neg1[i]
-	        else:
-                   neg1[i] =None
-
-#---------------second------------------------------------------------
-	    for i in range(len(x2)):
-               k1 = [abs(beta2),2*alpha2*x2[i],gamma2*x2[i]**2-answery1]
-               roots = np.roots(k1)
-               c2.append(roots)
-
-	    for i in range(len(c2)):
-	         pos2.append(c2[i][0])
-	         neg2.append(c2[i][1])
-	    for i in range(len(pos2)):
-                if np.imag(pos2[i]) == 0:
-                   pos2[i] = pos2[i]
-                else:
-                   pos2[i] = None
-
-	    for i in range(len(neg2)):
-	        if np.imag(neg2[i]) == 0:
-                   neg2[i] = neg2[i]
-	        else:
-                   neg2[i] =None
-
+	    x = arange(-100,100,0.2)
+	    k1 = 4*(alpha1**2)*(x**2)-4*beta1*((gamma1*(x**2))-answerx1)
+	    x1 = ((-2)*alpha1*x+(k1**0.5))/2*beta1
 	    a_1 = f_1.add_subplot(111)
-	    a_1.plot(x1,pos1,'*b')
-	    a_1.plot(x1,neg1,'*b')
+	    a_1.plot(x,x1,'--b')
+
+	    k2 = 4*(alpha1**2)*(x**2)-4*beta1*((gamma1*(x**2))-answerx1)
+	    x2 = ((-2)*alpha1*x-(k2**0.5))/2*beta1
+	    a_1 = f_1.add_subplot(111)
+	    a_1.plot(x,x2,'--b')
 	    a_1.set_xlabel("X")
 	    a_1.set_ylabel("X'")
 	    a_1.set_title("Tranverse beam ellipses",fontsize=20)
 	    
-	    a_2 = f_2.add_subplot(111)  
-	    a_2.plot(x2,pos2,'*b')
-	    a_2.plot(x2,neg2,'*b')
+	    k3 = 4*(alpha2**2)*(x**2)-4*beta2*((gamma2*(x**2))-answery1)
+	    x3 = ((-2)*alpha2*x+(k3**0.5))/2*beta2
+	    a_2 = f_2.add_subplot(111)    
+	    a_2.plot(x,x3,'--b')
+	    
+	    k4 = 4*(alpha2**2)*(x**2)-4*beta2*((gamma2*(x**2))-answery1)
+	    x4 = ((-2)*alpha2*x-(k4**0.5))/2*beta2
+	    a_2 = f_2.add_subplot(111)    
+	    a_2.plot(x,x4,'--b')
 	    a_2.set_xlabel("Y")
-	    a_2.set_ylabel("Y'") 
+	    a_2.set_ylabel("Y'")
 	   
 	    dataPlot_1 = FigureCanvasTkAgg(f_1, tab3)
 	    dataPlot_1.draw()
